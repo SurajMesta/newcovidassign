@@ -1,26 +1,47 @@
-import React from 'react';
+import React,{useEffect,useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
+import Header from './components/Header'
+import axios from 'axios'
+import Second from './components/Second'
+import {connect} from 'react-redux'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App=(props)=>{
+  const[results,setResults]=useState([])
+  useEffect(()=>{
+    axios.get('https://api.covid19india.org/v4/data.json').then((datas)=>{
+      console.log(datas.data)
+    
+    
+
+    setResults(Object.entries(datas.data))
+    props.getSt(results)
+
+
+     
+    }).catch(err=>{
+      console.log(err)
+    })
+  },[])
+  console.log(results)
+
+
+  return(
+   
+    <React.Fragment>
+      <Header/>
+      <Second datas={results}/>
+    </React.Fragment>
+  )
 }
 
-export default App;
+const mapDispatchToProps=(dispatch)=>{
+  return{
+    getSt:(val)=>{
+      dispatch({type:'GET_ST',val})
+    }
+  }
+
+}
+
+export default connect(null,mapDispatchToProps)(App);
